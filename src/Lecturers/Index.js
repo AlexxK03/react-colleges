@@ -1,53 +1,50 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import DeleteButton from "../components/DeleteButton";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
-import { Button } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
-import { Grid, Stack } from "@mui/joy";
+import { Grid } from "@mui/joy";
 import ButtonGroup from "@mui/joy/ButtonGroup";
-// ALEX USE .DATA.DATA FOR THE RESPONSE. TO SET VARIABLE PLZ
+import Button from "@mui/joy/Button";
+import { Stack } from "@mui/joy";
 const Index = (authenticated) => {
-  const [courses, setCourses] = useState([]);
+  const [lecturers, setLecturers] = useState([]);
 
   let token = localStorage.getItem("token");
 
   useEffect(() => {
-    
-
     axios
-      .get("https://college-api.vercel.app/api/courses", {
+      .get(`https://college-api.vercel.app/api/lecturers`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
         console.log(response);
-        setCourses(response.data.data);
+        setLecturers(response.data.data);
       })
       .catch((err) => {
         console.error(err);
       });
   }, []);
 
-  const removeCourse = (id) => {
+  const removeLecturer = (id) => {
     console.log("Deleted", id);
 
-    let updatedCourses = courses.filter((course) => {
-      return course.id !== id;
+    let updatedLecturers = lecturers.filter((lecturer) => {
+      return lecturer.id !== id;
     });
-    setCourses(updatedCourses);
+    setLecturers(updatedLecturers);
   };
 
-  if (courses.length === 0) return <h3>There are no courses saved</h3>;
+  if (lecturers.length === 0) return <h3>There are no Lecturers saved</h3>;
 
-  const coursesList = courses.map((course) => {
+  const lecturersList = lecturers.map((lecturer) => {
     return (
       <>
         <Grid xs={4}>
-          <div key={course.id}>
+          <div key={lecturer.id}>
             <ButtonGroup
               color="primary"
               size="md"
@@ -55,9 +52,20 @@ const Index = (authenticated) => {
               variant="soft"
               sx={{ "--ButtonGroup-radius": "20px" }}
             >
+              {/* {authenticated ? (
+                <DeleteButton
+                  resource={lecturers}
+                  id={lecturer.id}
+                  deleteCallback={removeLecturer}
+                />
+              ) : (
+                ""
+              )} */}
               {authenticated ? (
                 <Button>
-                  <Link to={`/courses/${course.id}/edit`}>Edit course</Link>
+                  <Link to={`/lecturers/${lecturer.id}/edit`}>
+                    Edit Lecturer
+                  </Link>
                 </Button>
               ) : (
                 ""
@@ -67,9 +75,9 @@ const Index = (authenticated) => {
             <Card variant="soft" sx={{ marginTop: "6px" }}>
               <CardContent>
                 <Typography level="title-md">
-                  <Link to={`/courses/${course.id}`}>{course.title}</Link>
+                  <Link to={`/lecturers/${lecturer.id}`}>{lecturer.name}</Link>
                 </Typography>
-                <Typography>{course.code}</Typography>
+                <Typography>{lecturer.email}</Typography>
               </CardContent>
             </Card>
           </div>
@@ -86,15 +94,15 @@ const Index = (authenticated) => {
         spacing={2}
       >
         <Typography>
-          <h2>All Courses</h2>
+          <h2>All Lecturers</h2>
         </Typography>
         <Button size="md">
-          <Link to={`/courses/create`}>Create New Course</Link>
+          <Link to={`/lecturers/create`}>Create New Lecturer</Link>
         </Button>
-      </Stack>
+      </Stack>{" "}
       <Grid container spacing={4} sx={{ flexGrow: 1 }} alignItems="baseline">
-        {coursesList}
-      </Grid>
+        {lecturersList}
+      </Grid>{" "}
     </>
   );
 };
